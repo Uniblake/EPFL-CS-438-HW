@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title> CS438 - Gossip with style</title>
+
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+</head>
+
+<body>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"
+        integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
+        crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
+        integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1"
+        crossorigin="anonymous"></script>
+
+<!--script with handlers to Go backend-->
+<script src="index.js"></script>
+
+<div class="container">
+    <h1 class="text-center"> Chat using gossip protocol </h1>
+    <!-- main box -->
+    <div class="row">
+        <div class="col-md-2">
+            <form>
+                <div class="form-group row">
+                    <label class="text-center" for="identifier">My Identifier</label>
+                    <input class="form-control" id="identifier"
+                           placeholder="identifier">
+                </div>
+                <button type="submit" class="btn btn-primary" id="submitid">Change my identifier</button>
+            </form>
+            <div class="row top-buffer">
+                <label class="text-center" for="identifier">List of Nodes</label>
+                <ul class="nav-node list-group" id="nodebox">
+                    <!--<li class="list-group-item">-->
+                        <!--<p class="list-group-item-text">Node 1 address</p>-->
+                    <!--</li>-->
+                    <!--<li class="list-group-item">-->
+                        <!--<p class="list-group-item-text">Node 2 address</p>-->
+                    <!--</li>-->
+                </ul>
+                <div class="divider"></div>
+                <form>
+                    <div class="form-group row">
+                        <input class="form-control" id="node" placeholder="Add new node...">
+                    </div>
+                    <button type="submit" id="submitnode" class="btn btn-primary">Add node</button>
+                </form>
+            </div>
+            <!--List of origins for sending private messages-->
+            <div class="row top-buffer">
+                <label class="text-center" for="identifier">Nodes with private connectivity</label>
+                <ul class="private-origin list-group" id="originbox">
+                    
+                </ul>
+                <div class="divider"></div>
+            </div>
+        </div>
+        <div class="col-md-1"></div>
+        <div class="col-md-9">
+            <div class="row">
+                <ul class="nav list-group" id="chatbox">
+                    <!--<li class="list-group-item">-->
+                        <!--&lt;!&ndash;<h4 class="list-group-item-heading">First List Group Item Heading</h4>&ndash;&gt;-->
+                        <!--<p class="list-group-item-text">List Group Item Text</p>-->
+                    <!--</li>-->
+                    <!--<li class="list-group-item">-->
+                        <!--&lt;!&ndash;<h4 class="list-group-item-heading">Second List Group Item Heading</h4>&ndash;&gt;-->
+                        <!--<p class="list-group-item-text">List Group Item Text</p>-->
+                    <!--</li>-->
+                </ul>
+            </div>
+            <form>
+                <div class="form-group row">
+                    <div class="col-md-10">
+                        <textarea class="form-control" id="text" rows="2" placeholder="Text to send..."></textarea>
+                    </div>
+                    <button type="submit" id="submittext" class="col-md-2 btn btn-primary">Send</button>
+                </div>
+            </form>
+            <hr>
+            <form>
+                <div class="form-group row">
+                    <div class="col-md-10">
+                        <textarea class="form-control" id="privatetext" rows="1" placeholder="Private text to send..."></textarea>
+                        
+                        <textarea class="form-control" id="dest" rows="1" placeholder="Private node name (not IP:PORT) to send..."></textarea>
+                    </div>
+                    <button type="submit" id="submitprivate" class="col-md-2 btn btn-primary">Send Private</button>
+                </div>
+            </form>
+            <hr>
+            <form>
+                <div class="form-group row">
+                    <div class="col-md-10">
+                        <textarea class="form-control" id="sharedfiles" rows="2" placeholder="No files shared yet..." disabled></textarea>
+                    </div>                    
+                    <!-- <button type="submit" id="submitprivate" class="col-md-2 btn btn-primary">Share Files</button> -->
+                    <input type="file" class="col-md-2" id="share_file"/>
+                    <script>
+                        $("#share_file").change(function(){
+                            fname = this.value.replace("C:\\fakepath\\", "")
+                            fpath = "./GUIShare/" + fname
+                            jsonvalue = JSON.stringify({share : fpath})
+                            alert("Shared a file - " + fname);
+                            $.post("/message", jsonvalue);
+                            $.get("/share", function(shared) {
+                                if (shared !== null) {
+                                    document.getElementById('sharedfiles').innerHTML = shared
+                                }
+                            });
+                        });
+                    </script>
+                </div>
+            </form>
+            <hr>
+            <form>
+                <div class="form-group row">
+                    <div class="col-md-10">
+                        <textarea class="form-control" id="download_destination" rows="1" cols="1" placeholder="Download Destination"></textarea>
+                        <textarea class="form-control" id="download_filename" rows="1" placeholder="Save As..."></textarea>
+                        <textarea class="form-control" id="download_hash" rows="1" placeholder="Download Hash"></textarea>
+                    </div>                    
+                    <button type="submit" id="submitdownload" class="col-md-2 btn btn-primary">Download</button>
+                </div>
+            </form>
+            <hr>
+            <form>
+                <div class="form-group row">
+                    <div class="col-md-10">
+                        <textarea class="form-control" id="search_keywords" rows="1" cols="1" placeholder="Keywords (comma separated values)"></textarea>
+                        <textarea class="form-control" id="search_budget" rows="1" placeholder="Search Budget (optional)"></textarea>
+                        <textarea class="form-control" id="matched_searches" rows="2" placeholder="No matches yet..." disabled></textarea>
+                    </div>                    
+                    <button type="submit" id="submitsearch" class="col-md-2 btn btn-primary">Search</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+</html>

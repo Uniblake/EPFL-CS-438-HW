@@ -1,0 +1,1 @@
+The folder for sharing files via GUI
